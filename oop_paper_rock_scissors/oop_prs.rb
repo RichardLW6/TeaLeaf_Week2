@@ -1,9 +1,7 @@
-# 1. Player chooses P/R/S
-# 2. Computer chooses P/R/S
-# 3. Choices are compared
-# 4. Winner, or tie, is decided, and choices and results are shown
+# PAPER/ROCK/SCISSORS - V1
 
-class Player
+# Player Chooses 
+class Player_Hand
   attr_accessor :player_choice
 
   def initialize
@@ -11,30 +9,32 @@ class Player
       puts "Choose one: (P/R/S)"
       @player_choice = gets.chomp.upcase
     end until ['P', 'R', 'S'].include?(player_choice)
-    if player_choice == 'R'
-      player_choice = 'Rock'
+    if @player_choice == 'R'
+      @player_choice = 'Rock'
     elsif player_choice == 'S'
-      player_choice = 'Scissors'
+      @player_choice = 'Scissors'
     else
-      player_choice = 'Paper'
+      @player_choice = 'Paper'
     end
   end
 end
 
-class Computer
-  attr_accessor :computer_choice
+# Computer Chooses
+class Computer_Hand
+  attr_reader :computer_choice
 
   def initialize
     @computer_choice = ['Paper', 'Rock', 'Scissors'].sample
   end
 end
 
+# Paper/Rock/Scissors Game
 class PaperRockScissors
-  attr_accessor :player, :computer 
+  attr_reader :player, :computer 
 
   def initialize
-    @player = Player.new.player_choice
-    @computer = Computer.new.computer_choice
+    @player = Player_Hand.new.player_choice
+    @computer = Computer_Hand.new.computer_choice
   end
 
   def continue?
@@ -47,8 +47,11 @@ class PaperRockScissors
     end
   end
 
-  def run
-    puts "You picked #{player} and computer picked #{computer}."
+  def choice_announce
+    puts "You picked #{player} and the computer picked #{computer}."
+  end
+
+  def comparison_of_choices
     if player == computer
        puts "It's a TIE!"
     elsif (player == 'Rock' && computer == 'Paper') ||
@@ -58,6 +61,11 @@ class PaperRockScissors
     else
       puts "You won!"
     end
+  end
+
+  def run
+    choice_announce
+    comparison_of_choices
     continue?
   end
 end
