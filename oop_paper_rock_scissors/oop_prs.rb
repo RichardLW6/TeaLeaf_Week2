@@ -32,6 +32,9 @@ end
 class PaperRockScissors
   attr_reader :player, :computer 
 
+  @@player_score = 0
+  @@computer_score = 0
+
   def initialize
     @player = Player_Hand.new.player_choice
     @computer = Computer_Hand.new.computer_choice
@@ -58,14 +61,22 @@ class PaperRockScissors
       (player == 'Paper' && computer == 'Scissors') ||
       (player == 'Scissors' && computer == 'Rock')
       puts "Computer won!"
+      @@computer_score += 1
     else
       puts "You won!"
+      @@player_score += 1
     end
+  end
+
+  def say_score
+    puts "Player: #{@@player_score}"
+    puts "Computer: #{@@computer_score}"
   end
 
   def run
     choice_announce
     comparison_of_choices
+    say_score
     continue?
   end
 end
