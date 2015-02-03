@@ -2,7 +2,7 @@
 
 # Player Chooses 
 class Player_Hand
-  attr_accessor :player_choice
+  attr_reader :player_choice
 
   def initialize
     begin
