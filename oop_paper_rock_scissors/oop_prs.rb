@@ -11,12 +11,12 @@ class Player
       puts "Choose one: (P/R/S)"
       @player_choice = gets.chomp.upcase
     end until ['P', 'R', 'S'].include?(player_choice)
-    if @player_choice == 'R'
-      @player_choice = 'Rock'
-    elsif @player_choice == 'S'
-      @player_choice = 'Scissors'
+    if player_choice == 'R'
+      player_choice = 'Rock'
+    elsif player_choice == 'S'
+      player_choice = 'Scissors'
     else
-      @player_choice = 'Paper'
+      player_choice = 'Paper'
     end
   end
 end
@@ -33,8 +33,8 @@ class PaperRockScissors
   attr_accessor :player, :computer 
 
   def initialize
-    @player = Player.new
-    @computer = Computer.new
+    @player = Player.new.player_choice
+    @computer = Computer.new.computer_choice
   end
 
   def continue?
@@ -48,12 +48,12 @@ class PaperRockScissors
   end
 
   def run
-    puts "You picked #{player.player_choice} and computer picked #{computer.computer_choice}."
-    if player.player_choice == computer.computer_choice
+    puts "You picked #{player} and computer picked #{computer}."
+    if player == computer
        puts "It's a TIE!"
-    elsif (player.player_choice == 'Rock' && computer.computer_choice == 'Paper') ||
-      (player.player_choice == 'Paper' && computer.computer_choice == 'Scissors') ||
-      (player.player_choice == 'Scissors' && computer.computer_choice == 'Rock')
+    elsif (player == 'Rock' && computer == 'Paper') ||
+      (player == 'Paper' && computer == 'Scissors') ||
+      (player == 'Scissors' && computer == 'Rock')
       puts "Computer won!"
     else
       puts "You won!"
