@@ -19,31 +19,30 @@ class Board
 end
 
 class Player
-  attr_accessor :coin_guess
-
+  #Player guesses the coin toss result
   def intro_coin_guess
     begin
     puts "Time to flip the coin. Do you guess Heads (H) or Tails (T)?"
-    self.coin_guess = gets.chomp.upcase
+    coin_guess = gets.chomp.upcase
     end until ["T","H"].include?(coin_guess)
-    self.coin_guess == "T" ? "Tails" : "Heads"
+    coin_guess == "T" ? "Tails" : "Heads"
   end
 end
 
 class TicTacToe
 
-  attr_accessor :game_board, :human_player, :human_player_coin_guess, :player_turn_number, :winning_spaces, :active_spaces
+  attr_accessor :game_board, :human_player, :player_turn_number, :active_spaces
 
   WINNING_SPACES = [[1,2,3], [4,5,6], [7,8,9], [1,4,7], [2,5,8], [3,6,9], [1,5,9], [3,5,7]]
 
   def initialize
     @game_board = Board.new
     @human_player = Player.new
-    @human_player_coin_guess = ""
     @player_turn_number = 0
     @active_spaces = @game_board.board_spaces
   end
 
+  #Coin is tossed
   def toss_coin
     ["Heads","Tails"].sample
   end
@@ -52,7 +51,7 @@ class TicTacToe
   def coin_toss_intro
     self.player_turn_number = 0
     coin_toss_result = toss_coin
-    self.human_player_coin_guess = human_player.intro_coin_guess
+    human_player_coin_guess = human_player.intro_coin_guess
     human_player_coin_guess == coin_toss_result ? who_goes_first = "Player" : who_goes_first = "Computer"
     self.player_turn_number = 1 if who_goes_first == "Player"
     puts "The result of the toss was #{coin_toss_result}, and you guessed #{human_player_coin_guess}."
@@ -82,8 +81,12 @@ class TicTacToe
 
   #Checks the spaces to see if any Player has won
   def check_for_winner
-    checker = WINNING_SPACES.map {|space| @active_spaces[space[0]] + @active_spaces[space[1]] + @active_spaces[space[2]]}
-    checker.include?("OOO") ? "Computer" : checker.include?("XXX") ? "Player" : "Nobody"
+    winning_spaces_filled = WINNING_SPACES.map {|space| @active_spaces[space[0]] + @active_spaces[space[1]] + @active_spaces[space[2]]}
+    if winning_spaces_filled.include?("OOO")
+      "Computer"
+    elsif winning_spaces_filled.include?("XXX")
+      "Player"
+    end
   end
 
   #Checks to see if board has openings or is full
@@ -129,12 +132,6 @@ class TicTacToe
       puts announce_the_result
     end until start_new_game? == false
   end
-
 end
 
-
-
 TicTacToe.new.run
-
-
-
