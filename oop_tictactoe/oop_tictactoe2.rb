@@ -51,11 +51,11 @@ class TicTacToe
   def coin_toss_intro
     self.player_turn_number = 0
     coin_toss_result = toss_coin
-    human_player_coin_guess = human_player.intro_coin_guess
-    human_player_coin_guess == coin_toss_result ? who_goes_first = "Player" : who_goes_first = "Computer"
+    player_coin_guess = human_player.intro_coin_guess
+    player_coin_guess == coin_toss_result ? who_goes_first = "Player" : who_goes_first = "Computer"
     self.player_turn_number = 1 if who_goes_first == "Player"
-    puts "The result of the toss was #{coin_toss_result}, and you guessed #{human_player_coin_guess}."
-    puts (who_goes_first == "Player" ? "The Player goes first!" : "The Computer goes first!")
+    puts "The result of the toss was #{coin_toss_result}, and you guessed #{player_coin_guess}."
+    puts who_goes_first == "Player" ? "The Player goes first!" : "The Computer goes first!"
   end
 
   #Human player chooses a space
@@ -114,6 +114,10 @@ class TicTacToe
     continue_answer == "Y"
   end
 
+  def whose_turn?(participant)
+
+  end
+
   #Plays the game
   def run
     begin
@@ -135,3 +139,4 @@ class TicTacToe
 end
 
 TicTacToe.new.run
+
