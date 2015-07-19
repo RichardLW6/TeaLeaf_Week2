@@ -1,7 +1,29 @@
 
-#Tic Tac Toe Board
-class Board
+#Tic Tac Toe OOO - 3rd Try
 
+class Scoreboard
+  attr_accessor :human_score, :computer_score
+
+  def initialize(human_name, computer_name)
+    @human_name = human_name
+    @computer_name = computer_name
+    @human_score = 0
+    @computer_score = 0
+  end
+
+  def show_scoreboard
+    puts "                                       "
+    puts "                                       "
+    puts "   -------------SCOREBOARD-------------"
+    puts "                                       "
+    puts "      #{@computer_name}: #{@computer_score}"
+    puts "      #{@human_name}: #{@human_score}"
+    puts "                                       "
+    puts "   ------------------------------------"  
+  end
+end
+
+class Board
   WINNING_LINES = [[1,2,3], [4,5,6], [7,8,9], [1,4,7], [2,5,8], [3,6,9], [1,5,9], [3,5,7]]
 
   def initialize
@@ -13,18 +35,17 @@ class Board
   end
 
   def show_board
-    system 'clear'
-    puts "\n\n     |     |     "
-    puts "  #{@data[1]}  |  #{@data[2]}  |  #{@data[3]}  "
-    puts "     |     |     "
-    puts "-----+-----+-----"
-    puts "     |     |     "
-    puts "  #{@data[4]}  |  #{@data[5]}  |  #{@data[6]}  "
-    puts "     |     |     "
-    puts "-----+-----+-----"
-    puts "     |     |     "
-    puts "  #{@data[7]}  |  #{@data[8]}  |  #{@data[9]}  "
-    puts "     |     |     \n\n"    
+    puts "\n\n        |     |     "
+    puts "     #{@data[1]}  |  #{@data[2]}  |  #{@data[3]}  "
+    puts "        |     |     "
+    puts "   -----+-----+-----"
+    puts "        |     |     "
+    puts "     #{@data[4]}  |  #{@data[5]}  |  #{@data[6]}  "
+    puts "        |     |     "
+    puts "   -----+-----+-----"
+    puts "        |     |     "
+    puts "     #{@data[7]}  |  #{@data[8]}  |  #{@data[9]}  "
+    puts "        |     |     \n\n"    
   end
 
   def empty_spaces
@@ -70,11 +91,12 @@ class Square
 end
 
 class Player
-  attr_reader :name, :marker
+  attr_reader :name, :marker, :score
 
   def initialize(name, marker)
     @name = name
     @marker = marker
+    @score = 0
   end
 end
 
@@ -85,7 +107,8 @@ class Game
     @board = Board.new
     @human = Player.new("Richard", "X")
     @computer = Player.new("Darth", "O")
-    @current_player = @human
+    @scoreboard = Scoreboard.new(@human.name, @computer.name)
+    @current_player = [@human, @computer].sample
   end
 
   def current_player_marks_square
@@ -120,18 +143,34 @@ class Game
     answer
   end
 
+  def update_scoreboard
+    if @current_player == @human
+      @scoreboard.human_score += 1
+    else
+      @scoreboard.computer_score += 1
+    end
+  end
+
+  def show_score_and_board
+    system 'clear'
+    @scoreboard.show_scoreboard
+    @board.show_board
+  end
+
   def run
     begin
       @board.create_clear_board
-      @board.show_board
+      show_score_and_board
       loop do
         current_player_marks_square
-        @board.show_board
+        show_score_and_board
         if winner_check == true
-          puts "The winner is #{@current_player.name}!"
+          update_scoreboard
+          show_score_and_board
+          puts "#{@current_player.name} is the winner!\n\n"
           break
         elsif @board.no_spaces_available?
-          puts "It's a draw!"
+          puts "It's a draw!\n\n"
           break
         else
           next_turn
@@ -139,10 +178,6 @@ class Game
       end 
     end until play_another_game? == 'N'
   end
-
 end
 
-
 Game.new.run
-
-
