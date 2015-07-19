@@ -1,4 +1,3 @@
-
 #Tic Tac Toe OOO - 3rd Try
 
 class Scoreboard
@@ -70,10 +69,8 @@ class Board
     end
       false
   end
-
 end
 
-#Square within the board
 class Square
   attr_accessor :value
 
@@ -93,10 +90,42 @@ end
 class Player
   attr_reader :name, :marker, :score
 
-  def initialize(name, marker)
-    @name = name
+  def initialize(marker)
+    @name = ""
     @marker = marker
     @score = 0
+    name_player
+  end
+
+  def name_player_as_human
+    begin 
+      puts "\n\nWhat is your name?"
+      answer = gets.chomp
+    end until answer.length > 0
+    @name = answer    
+  end
+
+  def name_player_as_computer
+    begin
+      puts "Would you like to play C3PO (easy), R2D2 (medium), or Hal 2000 (hard)? (Type C, R, or D)"
+      answer = gets.chomp.upcase
+    end until ['C','R','H'].include?(answer)
+    case answer
+    when 'C'
+      @name = 'C3PO'
+    when 'R'
+      @name = 'R2D2'
+    when 'H'
+      @name = 'Hal 2000'
+    end
+  end
+
+  def name_player
+    if marker == "X"
+      name_player_as_human
+    elsif marker == "O"
+      name_player_as_computer
+    end
   end
 end
 
@@ -105,10 +134,18 @@ class Game
 
   def initialize
     @board = Board.new
-    @human = Player.new("Richard", "X")
-    @computer = Player.new("Darth", "O")
+    @human = Player.new("X")
+    @computer = Player.new("O")
     @scoreboard = Scoreboard.new(@human.name, @computer.name)
     @current_player = [@human, @computer].sample
+  end
+
+  def get_human_name
+    begin
+      puts "What is your name?"
+      answer = gets.chomp.upcase
+    end until answer.length > 0
+    @human.name = answer
   end
 
   def current_player_marks_square
