@@ -15,8 +15,8 @@ class Scoreboard
     puts "                                       "
     puts "   -------------SCOREBOARD-------------"
     puts "                                       "
-    puts "      #{@computer_name}: #{@computer_score}"
-    puts "      #{@human_name}: #{@human_score}"
+    puts "      #{@computer_name}: #{@computer_score}            #{@human_name}: #{@human_score}"
+    puts "                                       "
     puts "                                       "
     puts "   ------------------------------------"  
   end
@@ -59,6 +59,10 @@ class Board
     empty_spaces.length == 0
   end
 
+  def center_position_open?
+    empty_positions.include?(5)
+  end
+
   def mark_space(position, marker)
     @data[position] = marker
   end
@@ -68,6 +72,25 @@ class Board
       return true if @data[line[0]] == marker && @data[line[1]] == marker && @data[line[2]] == marker 
     end
       false
+  end
+
+  def player_almost_winning_lines(marker)
+    WINNING_LINES.select do |line|
+      line_check = [@data[line[0]], @data[line[1]], @data[line[2]]]
+      (line_check.join).split("").sort == [" ", marker, marker]
+    end
+  end
+
+  def player_almost_winning_position(marker)
+    if player_almost_winning_lines(marker) != []
+      (player_almost_winning_lines(marker)[0]).select do |position|
+        empty_positions.include?(position)
+      end
+    end
+  end
+
+  def player_close_to_winning?(marker)
+    player_almost_winning_lines(marker).length > 0
   end
 end
 
@@ -88,18 +111,19 @@ class Square
 end
 
 class Player
-  attr_reader :name, :marker, :score
+  attr_reader :name, :marker, :skill
 
   def initialize(marker)
     @name = ""
     @marker = marker
-    @score = 0
+    @skill = 0
     name_player
   end
 
   def name_player_as_human
     begin 
-      puts "\n\nWhat is your name?"
+      system 'clear'
+      puts "\nWhat is your name?"
       answer = gets.chomp
     end until answer.length > 0
     @name = answer    
@@ -107,23 +131,25 @@ class Player
 
   def name_player_as_computer
     begin
-      puts "Would you like to play C3PO (easy), R2D2 (medium), or Hal 2000 (hard)? (Type C, R, or D)"
+      puts "Would you like to play C3PO (easy), Wall-E (medium), or Hal 2000 (hard)? (Type C, W, or H)"
       answer = gets.chomp.upcase
-    end until ['C','R','H'].include?(answer)
+    end until ['C','W','H'].include?(answer)
     case answer
     when 'C'
       @name = 'C3PO'
-    when 'R'
-      @name = 'R2D2'
+    when 'W'
+      @name = 'Wall-E'
+      @skill = 1
     when 'H'
       @name = 'Hal 2000'
+      @skill = 2
     end
   end
 
   def name_player
     if marker == "X"
       name_player_as_human
-    elsif marker == "O"
+    else
       name_player_as_computer
     end
   end
@@ -137,15 +163,43 @@ class Game
     @human = Player.new("X")
     @computer = Player.new("O")
     @scoreboard = Scoreboard.new(@human.name, @computer.name)
-    @current_player = [@human, @computer].sample
+    @current_player = @human 
   end
 
-  def get_human_name
-    begin
-      puts "What is your name?"
-      answer = gets.chomp.upcase
-    end until answer.length > 0
-    @human.name = answer
+  def computer_choice_to_block_player_win
+      @board.player_almost_winning_position("X")[0]
+  end
+
+  def computer_marks_winning_space
+      @board.player_almost_winning_position("O")[0]
+  end
+
+  def computer_marks_center_position
+    if @board.center_position_open?
+      5
+    end
+  end
+
+  def easy_computer_space_choice
+    @board.empty_positions.sample
+  end
+
+  def medium_computer_space_choice
+    if @board.player_close_to_winning?("O")
+      computer_marks_winning_space
+    elsif @board.player_close_to_winning?("X")
+      computer_choice_to_block_player_win
+    else
+      easy_computer_space_choice
+    end
+  end
+
+  def hard_computer_space_choice
+    if board.center_position_open?
+      5
+    else
+      medium_computer_space_choice
+    end
   end
 
   def current_player_marks_square
@@ -154,8 +208,15 @@ class Game
         puts "Please choose a space (1-9)"
         choice = gets.chomp.to_i
       end until @board.empty_positions.include?(choice)
-    else
-      choice = @board.empty_positions.sample
+    elsif @current_player == @computer
+      case @current_player.skill
+      when 0
+        choice = easy_computer_space_choice
+      when 1
+        choice = medium_computer_space_choice
+      when 2
+        choice = hard_computer_space_choice
+      end
     end
     @board.mark_space(choice, @current_player.marker)
   end
@@ -196,6 +257,7 @@ class Game
 
   def run
     begin
+      @current_player = [@human, @computer].sample
       @board.create_clear_board
       show_score_and_board
       loop do
