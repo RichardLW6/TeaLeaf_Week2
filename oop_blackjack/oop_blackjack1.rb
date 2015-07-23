@@ -60,8 +60,9 @@ module Hand
     cards.each do |card|
       puts "===> #{card}"
     end
+    puts "----------------------"
 
-    puts "TOTAL ===> #{total}"
+    puts "TOTAL ===> #{total}\n\n"
   end
 
   def total
@@ -107,7 +108,6 @@ class Human
     @name = name
     @cards = []
   end
-
 end
 
 
@@ -130,8 +130,12 @@ class Dealer
     total < 17
   end
 
+  def is_thinking
+    delay_time = [1, 2, 3].sample
+    puts "The Dealer is thinking..."
+    sleep(delay_time)
+  end
 end
-
 
 class Game
   attr_accessor :deck, :human, :dealer
@@ -160,14 +164,15 @@ class Game
 
 
   def initial_deal_to_players
+    system 'clear'
     deal_player_card(human, 2)
     deal_player_card(dealer, 2)
   end
 
 
   def dealer_shows_one_card
-    puts "The dealer is showing:"
-    puts dealer.cards.first
+    puts "-----DEALER SHOWING-----\n\n"
+    puts "===> #{dealer.cards.first}\n\n"
   end
 
 
@@ -193,6 +198,8 @@ class Game
 
   def human_turn
     begin
+      system 'clear'
+      dealer_shows_one_card
       human.show_hand
       if human.blackjack?
         puts "Congratulations, you just got Blackjack!"
@@ -209,7 +216,6 @@ class Game
     human.cards
   end
 
-
   def do_dealer_turn?
     human.safe? && !human.blackjack?
   end
@@ -220,18 +226,30 @@ class Game
     dealer.show_hand
   end
 
+  def display_all_hands
+    system 'clear'
+    human.show_hand
+    dealer.show_hand
+  end
+
 
   def dealer_turn
-    while dealer.weak_score? == true
-      puts "The dealer hits..."
+    begin
+      display_all_hands
+      if dealer.good_score?
+        break
+      end
+      dealer.is_thinking
       hits(dealer)
-      dealer.show_hand
+      display_all_hands
+      puts "The dealer hits..."
+      sleep(1)
       if dealer.busted?
         puts "The dealer busted!"
       elsif dealer.blackjack?
         puts "The dealer gets a Blackjack!"
-      end
-    end
+      end 
+    end until dealer.good_score?
   end
 
   def announce_winner
@@ -260,6 +278,7 @@ class Game
       dealer_shows_one_card
       human_turn
       if do_dealer_turn?
+        system 'clear'
         dealer_flips
         dealer_turn
       end
