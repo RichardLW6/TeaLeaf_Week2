@@ -14,7 +14,7 @@
 
 #3.
 
-#Class variables, like @@variable, are only attached the the class (not the instance of that class).  They cannot be changed or called by an instance of that class.
+#Class variables, like @@variable, are attached the the class and can be shared by all instances of that class.
 
 #Instance variables are assigned to states of the instances of the class.  They can be called on instances of a class, but not directly on the class object itself.
 
@@ -29,6 +29,8 @@
 #6.
 
 #Mixing in modules does not change any state of that module.  You can alter how the module works within the class that it is mixed into by overriding methods or adding to them with "super", but you aren't changing states.  Subclassing the module is actually creating a new instance of that module, complete with different states.
+
+#EDIT: I thought the question was asking about "subclassing modules", which was pretty cool/weird to learn about! The answer: subclassing is a relationship between classses where one class is the superclass of the other, and they subclass inherits the states and behaviors of the superclass.  Mixing in modules is giving classes certain behaviors that some class or classes may have but others might not - based more on relationship that single inheritance. 
 
 #7.
 
