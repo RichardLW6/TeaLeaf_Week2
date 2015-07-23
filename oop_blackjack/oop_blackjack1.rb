@@ -75,7 +75,7 @@ module Hand
     end
 
     face_values.select {|value| value == "Ace"}.count.times do 
-      break if total <= 21
+      break if total <= Blackjack::BLACKJACK_AMOUNT
       total -= 10
     end
 
@@ -83,15 +83,15 @@ module Hand
   end
 
   def busted?
-    total > 21
+    total > Blackjack::BLACKJACK_AMOUNT
   end
 
   def safe?
-    total <= 21
+    total <= Blackjack::BLACKJACK_AMOUNT
   end 
 
   def blackjack?
-    total == 21 && cards.length == 2
+    total == Blackjack::BLACKJACK_AMOUNT && cards.length == 2
   end
 end
 
@@ -100,9 +100,19 @@ class Human
 
   attr_accessor :name, :cards 
 
-  def initialize(name)
+  def initialize
     @name = name
     @cards = []
+    get_name
+  end
+
+  def get_name
+    system 'clear'
+    begin
+      puts "Welcome to Blackjack! What is your name?"
+      answer = gets.chomp
+    end until answer.empty? == false
+    self.name = answer
   end
 end
 
@@ -118,11 +128,11 @@ class Dealer
   end
 
   def good_score?
-    total >= 17
+    total >= Blackjack::DEALER_MIN_HIT_AMOUNT
   end
 
   def weak_score?
-    total < 17
+    total < Blackjack::DEALER_MIN_HIT_AMOUNT
   end
 
   def is_thinking
@@ -132,17 +142,23 @@ class Dealer
   end
 end
 
-class Game
+class Blackjack
+
+  BLACKJACK_AMOUNT = 21
+  DEALER_MIN_HIT_AMOUNT = 17
+
   attr_accessor :deck, :human, :dealer
 
   def initialize
-    reset
+    @deck = Deck.new
+    @human = Human.new
+    @dealer = Dealer.new
   end
 
   def reset
-    @deck = Deck.new
-    @human = Human.new("Richard")
-    @dealer = Dealer.new
+    deck = Deck.new
+    human.cards = []
+    dealer.cards = []
   end
 
   def deal_player_card(player, number_of_cards)
@@ -228,7 +244,7 @@ class Game
       dealer.is_thinking
       hits(dealer)
       display_all_hands
-      puts "The dealer hits..."
+      puts "The dealer hits...and draws a #{dealer.cards[-1]}."
       sleep(1)
       if dealer.busted?
         puts "The dealer busted!"
@@ -241,7 +257,7 @@ class Game
   def announce_winner
     case who_has_winning_hand?
     when "Human"
-      puts "You win!"
+      puts "#{self.human.name} wins!"
     when "Dealer"
       puts "Dealer wins!"
     when "Push"
@@ -273,4 +289,4 @@ class Game
   end
 end
 
-Game.new.run
+Blackjack.new.run
