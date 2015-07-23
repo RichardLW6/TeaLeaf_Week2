@@ -17,7 +17,6 @@ class Deck
     card_types.each {|card| @cards << Card.new(card[0],card[1])}    
   end
 
-
   def deal_card
     cards.pop
   end
@@ -35,7 +34,6 @@ class Deck
   end
 end
 
-
 class Card
   attr_accessor :face_value, :suit
 
@@ -52,7 +50,6 @@ class Card
     nice_looking_card
   end
 end
-
 
 module Hand
   def show_hand
@@ -98,7 +95,6 @@ module Hand
   end
 end
 
-
 class Human
   include Hand
 
@@ -109,7 +105,6 @@ class Human
     @cards = []
   end
 end
-
 
 class Dealer
   include Hand
@@ -150,18 +145,15 @@ class Game
     @dealer = Dealer.new
   end
 
-
   def deal_player_card(player, number_of_cards)
     number_of_cards.times do 
       player.cards << deck.deal_card
     end
   end
 
-
   def hits(player)
     deal_player_card(player, 1)
   end
-
 
   def initial_deal_to_players
     system 'clear'
@@ -169,12 +161,10 @@ class Game
     deal_player_card(dealer, 2)
   end
 
-
   def dealer_shows_one_card
     puts "-----DEALER SHOWING-----\n\n"
     puts "===> #{dealer.cards.first}\n\n"
   end
-
 
   def stay_or_hit?
     begin
@@ -183,7 +173,6 @@ class Game
     end until ['Y','N'].include?(answer)
     answer
   end
-
 
   def who_has_winning_hand?
     if human.total > dealer.total && human.safe? || human.blackjack? || dealer.busted?
@@ -194,7 +183,6 @@ class Game
       "Push"
     end
   end
-
 
   def human_turn
     begin
@@ -220,7 +208,6 @@ class Game
     human.safe? && !human.blackjack?
   end
 
-
   def dealer_flips
     puts "The dealer flips his other card and shows:"
     dealer.show_hand
@@ -231,7 +218,6 @@ class Game
     human.show_hand
     dealer.show_hand
   end
-
 
   def dealer_turn
     begin
@@ -271,7 +257,6 @@ class Game
     answer
   end
 
-
   def run
     begin
       initial_deal_to_players
@@ -286,8 +271,6 @@ class Game
       reset
     end until play_again? == 'N'
   end
-
 end
 
 Game.new.run
-
