@@ -1,7 +1,5 @@
 #OOP Blackjack
 
-require 'pry'
-
 class Deck
   attr_accessor :cards
 
@@ -178,10 +176,6 @@ class Money
     "#{amount} dollars."
   end
 
-  def not_enough_money?(request)
-    request > amount
-  end
-
   def enough_money?(request)
     amount >= request
   end
@@ -233,8 +227,12 @@ class Blackjack
     end until answer == 'Y'
   end
 
+  def total_player_money
+    player.money
+  end
+
   def player_greeting
-    puts "Great! Nice to meet you, #{player.name}. I can't wait to steal your #{player.money}"
+    puts "Great! Nice to meet you, #{player.name}. I can't wait to steal your #{total_player_money}"
   end
 
   def initial_deal_to_player_and_dealer
@@ -286,13 +284,12 @@ class Blackjack
     player.cards
   end
 
-
   def player_bets
-    puts "You have #{player.money}"
+    puts "You have #{total_player_money}"
     begin
       puts "How much money would you like to bet?"
       answer = gets.chomp.to_i
-    end until player.money.enough_money?(answer)
+    end until total_player_money.enough_money?(answer)
     self.current_bet = answer
   end
 
@@ -342,28 +339,28 @@ class Blackjack
     case who_has_winning_hand?
     when "Player"
       puts "#{self.player.name} wins!"
-      player_wins_money
+      player_wins_bet
     when "Dealer"
       puts "Dealer wins!"
-      player_loses_money
+      player_loses_bet
     when "Push"
       puts "PUSH - It's a draw!"
     end
   end
 
-  def player_wins_money
+  def player_wins_bet
     self.current_bet *= 2
     player.player_gets_money(current_bet)
     puts "Congratulations, you win #{current_bet} dollars!"
   end
 
-  def player_loses_money
+  def player_loses_bet
     player.player_loses_money(current_bet)
     puts "Not cool. You just lost #{current_bet} dollars!"
   end
 
   def give_player_total_money
-    puts "You now have #{player.money}."
+    puts "You now have #{total_player_money}."
   end
 
   def play_again?
@@ -375,7 +372,7 @@ class Blackjack
   end
 
   def broke_check
-    player.money.amount <= 0
+    total_player_money.amount <= 0
   end
 
   def player_is_broke
